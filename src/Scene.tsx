@@ -17,7 +17,8 @@ import Light2 from "./Lights/Light2";
 export default function Scene() {
   const modelRef = useRef<Group>(null);
 
-  const { frustum, near, samples, size, rings } = useControls("Shadows", {
+  const { Soft, frustum, near, samples, size, rings } = useControls("Shadows", {
+    Soft: true,
     frustum: {
       value: 6.5,
       max: 9.5,
@@ -49,13 +50,15 @@ export default function Scene() {
 
   return (
     <group>
-      <SoftShadows
-        frustum={frustum}
-        size={size}
-        near={near}
-        samples={samples}
-        rings={rings}
-      />
+      {Soft && (
+        <SoftShadows
+          frustum={frustum}
+          size={size}
+          near={near}
+          samples={samples}
+          rings={rings}
+        />
+      )}
       <mesh rotation={[-MathUtils.degToRad(90), 0, 0]} receiveShadow castShadow>
         <circleGeometry args={[2, 64]} />
         <meshStandardMaterial color={"white"} />
