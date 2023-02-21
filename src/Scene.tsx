@@ -1,38 +1,68 @@
-import { CameraControls, SpotLight, useDepthBuffer } from "@react-three/drei";
+import {
+  Backdrop,
+  CameraControls,
+  SoftShadows,
+  SpotLight,
+  useDepthBuffer,
+} from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
+import { useControls } from "leva";
 import { useRef } from "react";
 import { DoubleSide, Group, MathUtils, PointLightShadow } from "three";
 import Chair from "./assets/models/Chair";
+import Ambient from "./Lights/Ambient";
+import Light1 from "./Lights/Light1";
+import Light2 from "./Lights/Light2";
 
 export default function Scene() {
   const modelRef = useRef<Group>(null);
+
+  const { frustum, near, samples, size, rings } = useControls("Shadows", {
+    frustum: {
+      value: 6.5,
+      max: 9.5,
+      min: 3.5,
+    },
+    size: {
+      value: 0.05,
+      max: 0.1,
+      min: 0.001,
+    },
+    near: {
+      value: 9.5,
+      min: 1.5,
+      max: 11.5,
+    },
+    samples: {
+      value: 20,
+      min: 1,
+      max: 20,
+      step: 1,
+    },
+    rings: {
+      value: 5,
+      min: 1,
+      max: 20,
+      step: 1,
+    },
+  });
+
   return (
     <group>
-      {/* <mesh rotation={[-MathUtils.degToRad(90), 0, 0]} receiveShadow castShadow>
-        <circleGeometry args={[2, 64]} />
-        <meshStandardMaterial color={"white"}  />
-      </mesh> */}
-      <spotLight
-        position={[-1, 1.5, -1]}
-        intensity={2}
-        color={"white"}
-        castShadow
-        shadow-bias={-0.002}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+      <SoftShadows
+        frustum={frustum}
+        size={size}
+        near={near}
+        samples={samples}
+        rings={rings}
       />
-      <pointLight position={[-1, -1.5, -1]} />
-      {/*  <SpotLight
-        position={[-1, 1.5, -1]}
-        angle={0.5}
-        attenuation={2}
-        anglePower={5}
-        intensity={5}
-        shadow-bias={-0.001}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-      /> */}
-      <ambientLight intensity={0.5} />
+      <mesh rotation={[-MathUtils.degToRad(90), 0, 0]} receiveShadow castShadow>
+        <circleGeometry args={[2, 64]} />
+        <meshStandardMaterial color={"white"} />
+      </mesh>
+      <Light1 />
+      <Light2 />
+      <Ambient />
       <Chair
         ref={modelRef}
         onClick={(event) => {
